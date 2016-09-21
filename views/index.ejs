@@ -1,0 +1,105 @@
+<html ng-app="app">
+    <head>
+        <title>ManagementTeam</title>
+    </head>
+    <body>
+        <div ng-include src="'views/menu.html'"></div>
+
+        <ng-view></ng-view>
+
+        <!-- Libraries -->
+        <script src="/bower_components/angular/angular.min.js"></script>
+    	<script src="/bower_components/angular-route/angular-route.min.js"></script>
+    	<script src="/bower_components/angular-resource/angular-resource.min.js"></script>
+        <script src="/bower_components/jquery/dist/jquery.min.js"></script>
+        <script src="/bower_components/bootstrap/dist/js/bootstrap.min.js"></script>
+        <script type="text/javascript" src="/js/app.js"></script>
+        <script type="text/javascript" src="/js/controllers/HeaderController.js"></script>
+
+        <link rel="stylesheet" href="/bower_components/bootstrap/dist/css/bootstrap.min.css">
+        <link rel="stylesheet" href="/bower_components/bootstrap/dist/css/bootstrap-theme.min.css">
+        <link rel="stylesheet" href="/public/stylesheets/app.css">
+
+        
+        <div class="page-header">
+          <h1>Accueil</h1>
+        </div>
+
+        <div class='row'>
+            <div class="well">
+                <div class="col-md-12">
+                    <h3>Récapitulatif des technologies utilisées</h3>
+                    <table class="table table-hover table-condensed table-stripped table-bordered">
+                        <thead>
+                            <tr>
+                                <th>Technologie</th>
+                                <th>Role</th>
+                                <th>Motifs</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>NodeJS</td>
+                                <td>Pour la partie serveur</td>
+                                <td>NodeJS est un langage reposant sur les evenements. Il est non bloquant ce qui permet de faire des applications, microservices très efficaces et légers. De plus, avec npm, son gestionnaire de package, il donne accès à de multitudes de ressources facilitant l'implémentation.</td>
+                            </tr>
+                            <tr>
+                                <td>ExpressJS</td>
+                                <td>Framework qui tourne en NodeJS.</td>
+                                <td>Ce framework permet de faciliter grandement le développant d'API et d'application web en utilisant des middlewares. Il est très effication dans la création et la gestion des routes notamment.</td>
+                            </tr>
+                            <tr>
+                                <td>AngularJS</td>
+                                <td>Pour la partie front-end</td>
+                                <td>J'ai choisi cette technologie pour me challenger un peu. Je ne la connaissais pas du tout, et l'ai à peine effleuré ici. Ce que j'apprécie ici, est qu'on décrit directement les évènements dans les éléments HTML. La manipulation DOM et la logique sont séparées. On a l'apparition de controleurs sur les éléments de la vue... C'est aussi un très bon langage pour le test unitaire (je n'ai malheureument pas pu le vérifier ici), chose qui n'est pas aisée en utilisant JQuery.</td>
+                            </tr>
+                            
+                            <tr>
+                                <td>MongoDB</td>
+                                <td>Base de données orientée NoSQL document JSON</td>
+                                <td>Je l'ai choisi pour l'exercice car elle s'accorde très facilement dans un univers javascript, plus particulièrement avec NodeJS + ExpressJS pour la partie API (utilisation du middleware mongoose). J'aurais pu utiliser un SGBD plus classique tel que MySQL, car j'ai utilisé des schémas figé pour les modèles (on ne profitera pas de la scalabilité dans un premier temps). En revanche, on a un outil performant en lecture.</td>
+                            </tr>
+                            <tr>
+                                <td>Mocha + supertest</td>
+                                <td>Outils permettant de réaliser des tests unitaires.</td>
+                                <td>J'ai réalisé, comme il était demandé, quelques tests unitaires mais seulement pour la partie serveur (par manque de temps). Je l'ai choisi car il est très simple à prendre en main et efficace dans le test d'API</td>
+                            </tr>
+                            <tr>
+                                <td>Bootstrap</td>
+                                <td>Framework permettant de gagner un temps considérable lors de l'implémentation de la partie esthétiques de l'application (HTML, CSS, JS).</td>
+                                <td>J'ai déjà utilisé de nombreuses fois bootstrap et dès que j'ai vu qu'il s'intégrait parfaitement avec AngularJS, je n'ai pas hésité.</td>
+                            </tr>
+                            <tr>
+                                <td>Docker + Docker-compose</td>
+                                <td>Docker est un logiciel permettant de déployer des applications dans des conteneurs logiciels isolé en embarquant toutes ces dépendances</td>
+                                <td>Docker apporte de la flexibilité et de la portabilité (Linux) et rend le déploiement aisé et automatique. Avec les deux images officielles nodejs et mongo, cela rend encore plus facile le déploiement. J'ai rencontré parfois quelques soucis avec docker. Le serveur NodeJS et la DB tournait bien mais impossible de me connecter à l'appli. Un simple redémarrage solutionnait le problème.</td>
+                            </tr>
+                        </tbody>
+                    </table>
+
+                </div>
+            </div>
+        </div>
+        <div class='row'>
+            <div class="well">
+                <div class="col-md-12">
+                    <h3>Reste à faire</h3>
+                    <ul>
+                        <li>Consolider la partie Front-end :
+                            <ul>
+                                <li>Les formulaires ne sont surement pas assez sécurisés</li>
+                                <li>Séparer la partie vue des controllers, directives, services pour améliorer la maintenabilité</li>
+                                <li>Faire des tests unitaires pour la partie front-end afin de tester les comportements des formulaires et le CRUD</li>
+                            </ul>
+                        </li>
+                        <li>Partie Backend:
+                            <li>Faire plus de tests unitaires (les deux réalisés avec mocha sont sous tests à la racine de l'appli)</li>
+
+                        </li>
+                        <li>Revoir le déploiement avec Docker pour mieux maitriser le problème du non chargement de la page (par moment)</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </body>
+</html>

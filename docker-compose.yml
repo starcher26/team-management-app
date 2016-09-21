@@ -1,0 +1,10 @@
+tma:
+  build: .
+  links:
+    - db
+  ports:
+    - "30:3000"
+db:
+  image: mongo
+  ports:
+    - "27017:27017"

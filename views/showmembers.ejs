@@ -1,0 +1,420 @@
+<html ng-app="app">
+    <head>
+        <title>ManagementTeam</title>
+    </head>
+    <body>
+        <div ng-include src="'views/menu.html'"></div>
+        <ng-view></ng-view>
+
+        <!-- Libraries -->
+        <script src="/bower_components/angular/angular.min.js"></script>
+        <script src="/bower_components/angular-route/angular-route.min.js"></script>
+        <script src="/bower_components/angular-resource/angular-resource.min.js"></script>
+        <script src="/bower_components/jquery/dist/jquery.min.js"></script>
+        <script src="/bower_components/bootstrap/dist/js/bootstrap.min.js"></script>
+        <script src="/bower_components/ng-file-upload/ng-file-upload.min.js"></script>
+        <script type="text/javascript" src="/js/app.js"></script>
+        <script type="text/javascript" src="/js/controllers/HeaderController.js"></script>
+        
+
+        <link rel="stylesheet" href="/bower_components/bootstrap/dist/css/bootstrap.min.css">
+        <link rel="stylesheet" href="/bower_components/bootstrap/dist/css/bootstrap-theme.min.css">
+        <link rel="stylesheet" href="/public/stylesheets/app.css">
+
+        <!-- Template -->
+        
+        <script type="text/ng-template" id="/member.html">
+            <div class="form-group col-xs-4">
+                <input type="text" class="form-control" placeholder="Search" ng-model="search.name">
+            </div>
+            <div class="col-xs-12">
+                <div class="row">
+                    <div ng-if="err !== undefined" class='alert alert-danger' role='alert'>{{err}}</div>
+                    <table id="inv_data" class="table table-hover table-condensed table-stripped table-bordered">
+                        <thead>
+                            <tr>
+                                <th class="center"><span class="glyphicon glyphicon-user"></span></th>
+                                <th>Name</th>
+                                <th>Age</th>
+                                <th>Mail</th>
+                                <th>Team</th>
+                                <th>Modify</th>
+                                <th>Delete</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr ng-repeat="member in members | filter: search" ng-include="getTemplate(member)">
+
+                            </tr>
+
+                        </tbody>
+                    </table>
+                </div>
+                <div class="row">
+                    <button class="btn btn-primary btn-lg"  data-toggle="modal" data-target="#NewMemberModal" >New Member<span class="glyphicon glyphicon-plus-sign align-span" style="margin-left: 5px;top: 3px;"></span>
+                </div>
+                <div class="modal fade" id="NewMemberModal" role="dialog">
+                        <div class="modal-dialog modal-lg">
+
+                            <!-- Modal content-->
+                            <div class="modal-content">
+                                <div class="modal-header">
+                                    <button type="button" class="close" data-dismiss="modal">&times;</button>
+                                    <h4 class="modal-title">New Member</h4>
+                                </div>
+                                <div class="modal-body">
+                                    <div ng-if="err !== undefined" class='alert alert-danger' role='alert'>{{errForm}}</div>
+                                    <form name="form" novalidate>
+                                        <div class="form-group">
+                                            <label for="memberName">Name</label>
+                                            <input name="name" type="text" class="form-control" id="memberName" placeholder="Type in a member name" ng-model="newName" required ng-minlength="2">
+                                            <div class="err" ng-show="form.$submitted || form.name.$touched">
+                                              <span ng-show="form.name.$error.required">* Name required.</span>
+                                              <!-- <span ng-show="form.name.$error.text">Age must be a number.</span> -->
+                                            </div>
+                                        </div>
+                                        <div class="form-group">
+                                            <label for="age">Age</label>
+                                            <input name="age" type="number" class="form-control" id="age" placeholder="Member's age" ng-model="newAge" required>
+                                            <div class="err" ng-show="form.$submitted || form.age.$touched">
+                                              <span ng-show="form.age.$error.required">* Age required.</span>
+                                              <span ng-show="form.age.$error.number">* Age must be a number.</span>
+                                            </div>
+                                        </div>
+                                        <div class="form-group">
+                                            <label for="mail">Mail</label>
+                                            <input name="mail" type="email" class="form-control" id="mail" placeholder="Enter member's mail" ng-model="newMail" required>
+                                            <br />
+                                            <div class="err" ng-show="form.$submitted || form.mail.$touched">
+                                              <span ng-show="form.mail.$error.required">* Email required.</span>
+                                              <span ng-show="form.mail.$error.email">* This is not a valid email.</span>
+                                            </div>
+                                        </div>
+                                        <div class="form-group">
+                                            <label for="team">Team</label>
+                                            <!-- <input type="text" class="form-control" id="team" ng-model="newTeam"> -->
+                                            <select id="team" name="team" ng-model="newTeam" ng-options="team.name for team in teams" required>
+                                                <option value="">Select a team</option>
+                                            </select>
+                                            <p class="help-block">Choose your team.</p>
+                                            <div class="err" ng-show="form.$submitted || form.team.$touched">
+                                              <span ng-show="form.team.$error.required">* Team required.</span>
+                                            </div>
+                                        </div>
+                                        <div class="form-group">
+                                            <label for="photo">Photo</label>
+                                            <input id="photo" type="file" ngf-select ng-model="newPhoto" name="newPhoto" ngf-pattern="'image/*'" accept="image/*" ngf-max-size="20MB" required/>
+                                            Image thumbnail: <img style="width:100px;" ngf-thumbnail="newPhoto"/>
+                                            <p class="help-block">Choose a photo wisely.</p>
+                                            <div class="err" ng-show="form.$submitted || form.newPhoto.$touched">
+                                              <span ng-show="form.newPhoto.$error.required">* Photo required.</span>
+                                              <span ng-show="newPhoto.$error.maxSize">* File too large
+                                            {{newPhoto.size / 1000000|number:1}}MB: max 20M</span>
+                                            </div>
+                                        </div>
+                                        <button type="submit" class="btn btn-default" ng-click="save()">Submit</button>
+                                        <button type="button" data-dismiss="modal" class="btn btn-danger">Close</button>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </script>
+        <script type="text/ng-template" id="display">
+            <td class="center"><img style="width:100px;" src="/photos/{{member.photo}}"/></td>
+            <td>{{member.name}}</td>
+            <td >{{member.age}}</td>
+            <td>{{member.mail}}</td>
+            <td>{{member.belongsTo}}</td>
+            <td class="center"><button class="btn btn-primary" ng-click="edit($index)"><span class="glyphicon glyphicon-pencil"></span></td>
+            <td class="center"><button class="btn btn-danger" ng-click="remove($index)"><span class="glyphicon glyphicon-trash"></span></td>
+        </script>
+        <script type="text/ng-template" id="edit">
+            <td class="center"><img style="width:100px;" src="/photos/{{member.photo}}"/></td>
+            <td>
+                <input name="name" type="text" ng-model="member.name" />
+                <!-- <div class="err" ng-show="form.$submitted || form.name.$touched">
+                  <span ng-show="name.$error.required">* Name required.</span>
+                </div>
+            </td> -->
+            <td>
+                <input name="age" type="number" ng-model="member.age" />
+                <!-- <div class="err" ng-show="form.$submitted || form.age.$touched">
+                  <span ng-show="age.$error.required">* Age required.</span>
+                  <span ng-show="age.$error.number">* Age must be a number.</span>
+                </div> -->
+            </td>
+
+            <td>
+                <input name="mail" type="email" ng-model="member.mail" />
+                <!-- <div class="err" ng-show="form.$submitted || form.mail.$touched">
+                  <span ng-show="mail.$error.required">* Email required.</span>
+                  <span ng-show="mail.$error.email">* This is not a valid email.</span>
+                </div> -->
+            </td>
+            <td>
+                <select name="team" id="team" ng-model="member.belongsTo" ng-options="team.name for team in teams" required>
+                    <option value="">Select a team</option>
+                </select>
+                <!-- <div class="err" ng-show="form.$submitted || form.team.$touched">
+                  <span ng-show="form.team.$error.required">* Team required.</span>
+                </div> -->
+            </td>
+            <td class="center">
+                <button ng-click="update($index)" class="btn btn-primary"><span class="glyphicon glyphicon-floppy-saved"></span></button>
+                <button ng-click="cancel($index)" class="btn btn-danger"><span class="glyphicon glyphicon-floppy-remove"></span></button>
+            </td>
+        </script>
+        <script type="text/javascript">
+        angular.module('app', ['ngRoute', 'ngResource', 'ngFileUpload'])
+        .factory('Members', ['$resource', function($resource){
+            return $resource('/members/:id', null, {
+                'update': { method:'PUT' }
+            });
+        }])
+        .controller('MemberController', ['$scope', '$http', '$window', 'Members', 'Upload', function ($scope, $http, $window, members, Upload) {
+            $scope.members = members.query();
+            $scope.selected = {};
+            $scope.teams = [];
+            $http({
+                method: 'GET',
+                url: 'teams'
+            }).success(function (result)
+            {
+                $scope.teams = result;
+            });
+            
+            // console.log($scope.teams);
+            $scope.selected = {};
+            $scope.getTemplate = function (member) {
+
+                if (member._id === $scope.selected._id) return 'edit';
+                else return 'display';
+            };
+            $scope.save = function(){
+                // if(!$scope.newName|| $scope.newName.length < 1) return;
+                // if(!$scope.newAge || $scope.newAge.length < 1) return;
+                // if(!$scope.newMail || $scope.newMail.length < 1) return;
+                // if(!$scope.newTeam|| $scope.newTeam.length < 1) return;
+                console.log($scope.form.$valid);
+                console.log($scope.form);
+                if ($scope.form.$valid && $scope.newPhoto) {
+                    $('#NewMemberModal').modal('hide');
+                    $scope.upload($scope.newPhoto);
+                }
+                else
+                {
+                    $scope.errForm = 'There are several errors in form.';
+                }
+                
+                
+            }
+            $scope.upload = function (file) {
+                Upload.upload({
+                    url: 'http://localhost:3000/upload', //webAPI exposed to upload the file
+                    data:{file:file} //pass file as data, should be user ng-model
+                }).then(function (resp) { //upload function returns a promise
+                    if(resp.data.error_code === 0){ //validate success
+                        console.log('Success ' + resp.config.data.file.name + ' uploaded. Response: ');
+                        console.log(resp.config.data.file);
+                        console.log(resp.data.file.filename);
+                        // $scope.filename = resp.data.file.filename;
+                        var member = new members({ name: $scope.newName, age: $scope.newAge, mail: $scope.newMail, belongsTo: $scope.newTeam.name, photo: resp.data.file.filename });
+                        member.$save(function(post){
+                            console.log(post);
+                            $scope.members.push(member);
+                            // sending put requests to update member's team
+                            $scope.newTeam.members.push(member.name);
+                            $http.put('/teams/' + $scope.newTeam._id, $scope.newTeam).then(function (response) {
+                                if (response.data)
+                                    $scope.msg = "Put Data Method Executed Successfully!";
+                            }, function (response) {
+                                    console.log(response);
+
+                            });
+                            $scope.newName = ''; // clear textbox
+                            $scope.newAge = ''; // clear textbox
+                            $scope.newMail = ''; // clear textbox
+                            $scope.newTeam = '';
+                            $scope.newPhoto = {};
+                            $scope.err = undefined;
+                        }, function(err){
+                            console.log(err);
+                            if(err.data.indexOf('duplicate key error') !== -1 && err.data.indexOf($scope.newName) !== -1)
+                            {
+                                $scope.err = "Member name "+$scope.newName+" already exists";
+                            }
+                            else if(err.data.indexOf('duplicate key error') !== -1 && err.data.indexOf($scope.newMail) !== -1)
+                            {
+                                $scope.err = "Member Mail "+$scope.newMail+" already exists";
+                            }
+                            else
+                            {
+                                $scope.err = "An critical error occured, please contact the web administrator.";
+                            }
+                        });
+                    } else {
+                        console.log('an error occured');
+                    }
+                }, function (resp) { //catch error
+                    console.log(resp);
+                    console.log('Error status: ' + resp.status);
+                    console.log('Error status: ' + resp.status);
+                }, function (evt) {
+                    console.log(evt);
+                    var progressPercentage = parseInt(100.0 * evt.loaded / evt.total);
+                    console.log('progress: ' + progressPercentage + '% ' + evt.config.data.file.name);
+                    $scope.progress = 'progress: ' + progressPercentage + '% '; // capture upload progress
+                });
+            };
+            $scope.update = function(index){
+                console.log("Saving contact");
+                var member = $scope.members[index];
+                var errorList = [];
+                var errors = 0
+                if (!member.name || member.name.length <1)
+                {
+                    errors++;
+                    errorList.push("Member Name required");
+                }
+                if (!member.age || member.age.length <1)
+                {
+                    errors++;
+                    errorList.push("Member Age required");
+                }
+                if (!member.mail || member.mail.length <1)
+                {
+                    errors++;
+                    errorList.push("Member Mail required");
+                }
+                if (!member.belongsTo || member.belongsTo.length <1)
+                {
+                    errors++;
+                    errorList.push("Team Name required");
+                }
+                if (errors == 0)
+                {
+                    $scope.err = undefined;
+                    console.log(member.belongsTo);
+                    var team = member.belongsTo;
+                    member.belongsTo = member.belongsTo.name
+                    members.update({id: member._id}, member, function(resp){
+                        console.log("SELECTED");
+                        console.log(resp);
+                        console.log($scope.members[index]);
+                        $scope.err = undefined;
+                        if ($scope.selected.belongsTo != team.name) // update team case
+                        {
+                            console.log('changing Team');
+                            // remove member in the old team
+                            var oldTeam;
+                            $scope.teams.forEach(function(curTeam){
+
+                                if (curTeam.name == resp.belongsTo)
+                                    oldTeam = curTeam;
+                            });
+                            console.log(oldTeam);
+                            var idx = oldTeam.members.indexOf(resp.name);
+                            if (idx > -1) {
+                                oldTeam.members.splice(idx, 1);
+                            }
+                            $http.put('/teams/' + oldTeam._id, oldTeam).then(function (response) {
+                                if (response.data)
+                                    $scope.msg = "Put Data Method Executed Successfully!";
+                            }, function (response) {
+                                    console.log(response);
+
+                            });
+                            // update team with a new member
+                            team.members.push(member.name);
+                            $http.put('/teams/' + team._id, team).then(function (response) {
+                                if (response.data)
+                                    $scope.msg = "Put Data Method Executed Successfully!";
+                            }, function (response) {
+                                    console.log(response);
+
+                            });
+                        }
+                    }, function(err){
+                        console.log(err);
+                        if(err.data.indexOf('duplicate key error') !== -1 && err.data.indexOf(member.name) !== -1)
+                        {
+                            $scope.err = "Member name "+member.name+" already exists";
+                        }
+                        else if(err.data.indexOf('duplicate key error') !== -1 && err.data.indexOf(member.mail) !== -1)
+                        {
+                            $scope.err = "Member Mail "+member.mail+" already exists";
+                        }
+                        else
+                        {
+                            $scope.err = "An critical error occured, please contact the web administrator.";
+                        }
+                        $scope.members[index] = angular.copy($scope.selected);
+                    });
+                    // $scope.selected = angular.copy($scope.members[index]);
+                    $scope.selected = {};
+                }
+                else
+                {
+                    $scope.err = errorList;
+                }
+            }
+            $scope.edit = function(index){
+                $scope.err = undefined;
+                $scope.selected = angular.copy($scope.members[index]);
+                // console.log($scope.selected);
+            }
+            $scope.cancel = function(index){
+                console.log($scope.selected);
+                $scope.members[index] = angular.copy($scope.selected);
+                console.log($scope.members[index]);
+                $scope.selected = {};
+            }
+            $scope.remove = function(index){
+                var member = $scope.members[index];
+                var teamName = member.belongsTo;
+                console.log(team);
+                member.belongsTo = member.belongsTo.name
+                members.remove({id: member._id}, function(){
+                    $scope.members.splice(index, 1);
+                    //Remove member in the the team
+                    // sending put requests to remove members from team object
+                    var team;
+                    $scope.teams.forEach(function(curTeam){
+
+                        if (curTeam.name == teamName)
+                            team = curTeam;
+                    });
+                    console.log(team);
+
+                    var idx = team.members.indexOf(teamName);
+                    if (idx > -1) {
+                        team.members.splice(idx, 1);
+                    }
+                    $http.put('/teams/' + team._id, team).then(function (response) {
+                        if (response.data)
+                            $scope.msg = "Put Data Method Executed Successfully!";
+                    }, function (response) {
+                            console.log(response);
+
+                    });
+                });
+            }
+        }])
+        .controller('HeaderController', ['$scope', '$location', function ($scope, $location){
+            $scope.isActive = function (viewLocation) { 
+                return viewLocation === $location.path();
+            };
+        }])
+        .config(['$routeProvider', function ($routeProvider) {
+            $routeProvider
+            .when('/', {
+                templateUrl: '/member.html',
+                controller: 'MemberController'
+            })
+        }]);
+        </script>
+    </body>
+</html>

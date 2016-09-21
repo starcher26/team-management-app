@@ -1,0 +1,227 @@
+<html ng-app="app">
+    <head>
+        <title>ManagementTeam</title>
+    </head>
+    <body>
+        <div ng-include src="'views/menu.html'"></div>
+        <ng-view></ng-view>
+        <!-- Libraries -->
+        <script src="/bower_components/angular/angular.min.js"></script>
+    	<script src="/bower_components/angular-route/angular-route.min.js"></script>
+    	<script src="/bower_components/angular-resource/angular-resource.min.js"></script>
+        <script src="/bower_components/jquery/dist/jquery.min.js"></script>
+        <script src="/bower_components/bootstrap/dist/js/bootstrap.min.js"></script>
+        <script src="/bower_components/angular-bootstrap-colorpicker/js/bootstrap-colorpicker-module.min.js"></script>
+
+
+        <script type="text/javascript" src="/js/app.js"></script>
+        <script type="text/javascript" src="/js/controllers/HeaderController.js"></script>
+        
+
+        <link rel="stylesheet" href="/bower_components/bootstrap/dist/css/bootstrap.min.css">
+        <link rel="stylesheet" href="/bower_components/bootstrap/dist/css/bootstrap-theme.min.css">
+        <link rel="stylesheet" href="/bower_components/angular-bootstrap-colorpicker/css/colorpicker.min.css">
+        <link rel="stylesheet" href="/public/stylesheets/app.css">
+
+        <!-- Template -->
+        
+        <script type="text/ng-template" id="/team.html">
+            <div class="form-group col-xs-4">
+                <input type="text" class="form-control" placeholder="Search" ng-model="search.name">
+            </div>
+            <div class="col-xs-12">
+                <div class="row">
+                    <div ng-if="err !== undefined" class='alert alert-danger' role='alert'>{{err}}</div>
+                    <table id="team_data" class="table table-hover table-condensed table-stripped table-bordered">
+                        <thead>
+                            <tr>
+                                <th class="center"><span class="glyphicon glyphicon-tint"></span></th>
+                                <th>Name</th>
+                                <th>Description</th>
+                                <th>Members</th>
+                                <th>Update</th>
+                                <th>Delete</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr ng-repeat="team in teams | filter: search" ng-include="getTemplate(team)">
+
+                            </tr>
+
+                        </tbody>
+                    </table>
+                </div>
+                <div class="row">
+                    <button class="btn btn-primary btn-lg"  data-toggle="modal" data-target="#NewTeamModal" >New Team<span class="glyphicon glyphicon-plus-sign align-span" style="margin-left: 5px;top: 3px;"></span>
+                </div>
+                <div class="modal fade" id="NewTeamModal" role="dialog">
+                        <div class="modal-dialog modal-lg">
+
+                            <!-- Modal content-->
+                            <div class="modal-content">
+                                <div class="modal-header">
+                                    <button type="button" class="close" data-dismiss="modal">&times;</button>
+                                    <h4 class="modal-title">New Team</h4>
+                                </div>
+                                <div class="modal-body">
+                                    <form name="form" novalidate>
+                                        <div class="form-group">
+                                            <label for="teamName">Name</label>
+                                            <input name="teamname" type="text" class="form-control" id="teamName" placeholder="Type in a team name" ng-model="newName" required>
+                                            <div class="err" ng-show="form.$submitted || form.teamname.$touched">
+                                              <span ng-show="form.teamname.$error.required">* Name required.</span>
+                                              <!-- <span ng-show="form.name.$error.text">Age must be a number.</span> -->
+                                            </div>
+                                        </div>
+                                        <div class="form-group">
+                                            <label for="description">Description</label>
+                                            <input type="text" class="form-control" id="description" placeholder="Describe your team with few words" ng-model="newDescription">
+                                        </div>
+                                        <div class="form-group">
+                                            <label for="color">Color</label>
+                                            <input name="color" colorpicker="hex" type="text" class="form-control" id="color" ng-model="newColor" required readonly="readonly">
+                                            <p class="help-block">Choose a color wisely.</p>
+                                            <div class="err" ng-show="form.$submitted || form.color.$touched">
+                                              <span ng-show="form.color.$error.required">* Color required.</span>
+                                              <!-- <span ng-show="form.name.$error.text">Age must be a number.</span> -->
+                                            </div>
+                                        </div>
+                                        <button type="submit" class="btn btn-default" ng-click="save()">Submit</button>
+                                        <button type="button" data-dismiss="modal" class="btn btn-danger">Close</button>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </script>
+        <script type="text/ng-template" id="display">
+            <td class="center"><span class="square" style="background-color: {{team.color}};"></span></td>
+            <td>{{team.name}}</td>
+            <td >{{team.description}}</td>
+            <td>{{team.members}}</td>
+            <td class="center"><button class="btn btn-primary" ng-click="edit($index)"><span class="glyphicon glyphicon-pencil"></span></td>
+            <td class="center"><button class="btn btn-danger" ng-click="remove($index)"><span class="glyphicon glyphicon-trash"></span></td>
+        </script>
+        <script type="text/ng-template" id="edit">
+            <td><input colorpicker="hex" type="text" ng-model="team.color" readonly="readonly" /></td>
+            <td><input type="text" ng-model="team.name" /></td>
+            <td><input type="text" ng-model="team.description" /></td>
+            <td>{{team.members}}</td>
+            <td class="center">
+                <button ng-click="update($index)" class="btn btn-primary"><span class="glyphicon glyphicon-floppy-saved"></span></button>
+                <button ng-click="cancel($index)" class="btn btn-danger"><span class="glyphicon glyphicon-floppy-remove"></span></button>
+            </td>
+        </script>
+        <script type="text/javascript">
+        angular.module('app', ['ngRoute', 'ngResource', 'colorpicker.module'])
+        .factory('Teams', ['$resource', function($resource){
+            return $resource('/teams/:id', null, {
+                'update': { method:'PUT' }
+            });
+        }])
+        .controller('TeamController', ['$scope', 'Teams', function ($scope, teams) {
+            $scope.teams = teams.query();
+            $scope.selected = {};
+            $scope.getTemplate = function (team) {
+
+                if (team._id === $scope.selected._id) return 'edit';
+                else return 'display';
+            };
+            $scope.save = function(){
+                // if(!$scope.newName|| $scope.newName.length < 1) return;
+                // if(!$scope.newDescription || $scope.newDescription.length < 1) return;
+                // if(!$scope.newColor || $scope.newColor.length < 1) return;
+                if ($scope.form.$valid) {
+                    $('#NewTeamModal').modal('hide');
+                    var team = new teams({ name: $scope.newName, description: $scope.newDescription, color: $scope.newColor });
+                    team.$save(function(post){
+                        $scope.teams.push(team);
+                        $scope.newName = ''; // clear textbox
+                        $scope.newDescription = ''; // clear textbox
+                        $scope.newColor = ''; // clear textbox
+                        $scope.err = undefined;
+                    }, function(err){
+                        console.log(err);
+                        if(err.data.indexOf('duplicate key error') !== -1)
+                        {
+                            $scope.err = "Team name "+$scope.newName+" already exists";
+                        }
+                        else
+                        {
+                            $scope.err = "An critical error occured, please contact the web administrator.";
+                        }
+                    });
+                }
+            }
+            $scope.update = function(index){
+
+                console.log("Saving contact");
+                var team = $scope.teams[index];
+                var errorList = [];
+                var errors = 0
+                if (!team.name || team.name.length <1)
+                {
+                    errors++;
+                    errorList.push("Tean Name required");
+                }
+                if (errors == 0)
+                {
+                    $scope.err = undefined;
+                    teams.update({id: team._id}, team, function(post){
+                        console.log(post);
+                        $scope.err = undefined;
+                    }, function(err){
+                        console.log(err);
+                        if(err.data.indexOf('duplicate key error') !== -1)
+                        {
+                            $scope.err = "Team name "+team.name+" already exists";
+                        }
+                        else
+                        {
+                            $scope.err = "An critical error occured, please contact the web administrator.";
+                        }
+                        $scope.teams[index] = angular.copy($scope.selected);
+                    });
+                    
+                    $scope.selected = {};
+                }
+                else
+                {
+                    $scope.err = errorList; 
+                }
+            }
+            $scope.edit = function(index){
+                $scope.err = undefined;
+                $scope.selected = angular.copy($scope.teams[index]);
+                console.log($scope.selected);
+            }
+            $scope.cancel = function(index){
+                console.log($scope.selected);
+                $scope.teams[index] = angular.copy($scope.selected);
+                console.log($scope.teams[index]);
+                $scope.selected = {};
+            }
+            $scope.remove = function(index){
+                var team = $scope.teams[index];
+                teams.remove({id: team._id}, function(){
+                    $scope.teams.splice(index, 1);
+                });
+            }
+        }])
+        .controller('HeaderController', ['$scope', '$location', function ($scope, $location){
+            $scope.isActive = function (viewLocation) { 
+                return viewLocation === $location.path();
+            };
+        }])
+        .config(['$routeProvider', function ($routeProvider) {
+            $routeProvider
+            .when('/', {
+                templateUrl: '/team.html',
+                controller: 'TeamController'
+            })
+        }]);
+        </script>
+    </body>
+</html>

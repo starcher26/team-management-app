@@ -1,0 +1,23 @@
+.square{
+    height: 35px;
+    width: 60px;
+    display: inline-block;
+    position: relative;
+}
+
+.center
+{
+    text-align: center;
+}
+
+.align_span
+{
+    margin-left: 5px;
+    top: 3px;
+}
+
+.err
+{
+	color: red;
+	font-size: 11px;
+}

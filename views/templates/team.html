@@ -1,0 +1,16 @@
+Search: <input type="text" ng-model="search.name">
+            <div class="row" ng-repeat="team in teams | filter: search">
+                <div class="form-control">
+            <!-- <ul>-->
+            <!--     <li ng-repeat="team in teams | filter: search">-->
+                    <span class="label label-primary">{{team.name}}</span>
+                    <div class="btn-group" role="group" aria-label="...">
+                        <a href="#/{{todo._id}}" class='btn'><span class="glyphicon glyphicon-eye-open"></span></a>
+                        <button ng-show="!editing[$index]" ng-click="remove($index)"><span class="glyphicon glyphicon-pencil"></span></button>
+                        <button ng-show="!editing[$index]" ng-click="remove($index)"><span class="glyphicon glyphicon-trash"></span></button>
+                    </div>
+            <!--     </li>-->
+            <!-- </ul>-->
+                </div>
+            </div>
+            New team<input type="text" ng-model="newTeam"><button ng-click="save()">Create</button>

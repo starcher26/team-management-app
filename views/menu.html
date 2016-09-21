@@ -1,0 +1,12 @@
+<nav class="navbar navbar-default">
+    <div class="container-fluid">
+        <div class="collapse navbar-collapse" ng-controller="HeaderController">
+            <ul class="nav navbar-nav">
+                <li ng-class="{ active: isActive('/')}"><a href="/">Home</a></li>
+                <li ng-class="{ active: isActive('/showteams')}"><a href="/showteams">Teams</a></li>
+                <li ng-class="{ active: isActive('/showmembers')}"><a href="/showmembers">Members</a></li>
+            </ul>
+            
+        </div>
+    </div>
+</nav>

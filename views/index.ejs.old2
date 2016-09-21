@@ -1,0 +1,97 @@
+<html ng-app="app">
+    <head>
+        <title>ManagementTeam</title>
+    </head>
+    <body>
+
+        <ng-view></ng-view>
+
+        <!-- Libraries -->
+        <script src="/bower_components/angular/angular.min.js"></script>
+	<script src="/bower_components/angular-route/angular-route.min.js"></script>
+	<script src="/bower_components/angular-resource/angular-resource.min.js"></script>
+	<script src="/bower_components/jquery/dist/jquery.min.js"></script>
+	<script src="/bower_components/bootstrap/dist/js/bootstrap.min.js"></script>
+	<link rel="stylesheet" href="/bower_components/bootstrap/dist/css/bootstrap.min.css"/>
+	<link rel="stylesheet" href="/bower_components/bootstrap/dist/css/bootstrap-theme.min.css"/>
+        <!-- Template -->
+        <script type="text/ng-template" id="/team.html">
+    	    <!--<div ng-include src="'views/templates/team.html'"></div>-->
+	    Search: <input type="text" ng-model="search.name">
+            <div class="row" ng-repeat="team in teams | filter: search">
+                <div class="form-control">
+            <!-- <ul>-->
+            <!--     <li ng-repeat="team in teams | filter: search">-->
+                    <span class="label label-primary">{{team.name}}</span>
+                    <div class="btn-group" role="group" aria-label="...">
+                        <a href="#/{{todo._id}}" class='btn'><span class="glyphicon glyphicon-eye-open"></span></a>
+                        <button ng-show="!editing[$index]" ng-click="remove($index)"><span class="glyphicon glyphicon-pencil"></span></button>
+                        <button ng-show="!editing[$index]" ng-click="remove($index)"><span class="glyphicon glyphicon-trash"></span></button>
+                    </div>
+            <!--     </li>-->
+            <!-- </ul>-->
+                </div>
+            </div>
+            New team<input type="text" ng-model="newTeam"><button ng-click="save()">Create</button>
+
+        </script>
+
+        <script type="text/ng-template" id="/teamDetails.html">
+            <h1>{{ team.name }}</h1>
+            description: <textarea>{{ team.description }}</textarea>
+	    <button ng-click="remove()">Remove</button>
+        </script>
+
+        <script>
+            angular.module('app', ['ngRoute', 'ngResource'])
+	    // Service
+            .factory('Teams', ['$resource', function($resource){
+                return $resource('/teams/:id', null, {
+                    'update': { method:'PUT' }
+                });
+            }])
+            // Controller
+            .controller('TeamController', ['$scope', 'Teams', function ($scope, teams) {
+                $scope.teams = teams.query();
+		
+		$scope.save = function(){
+		    console.log($scope.newTeam);
+                    if(!$scope.newTeam || $scope.newTeam.length < 1) return;
+                    var team = new teams({ name: $scope.newTeam, description: 'default' });
+                    team.$save(function(){
+                        $scope.teams.push(team);
+                        $scope.newTeam = ''; // clear textbox
+                    });
+                }
+		$scope.remove = function(index){
+                    var team = $scope.teams[index];
+                    teams.remove({id: team._id}, function(){
+                        $scope.teams.splice(index, 1);
+                    });
+                }
+            }])
+	    .controller('TeamDetailController', ['$scope', '$routeParams', 'Teams', function ($scope, $routeParams, teams) {
+                $scope.team = teams.get({id: $routeParams.id });
+		$scope.remove = function(){
+                    teams.remove({id: $scope.team._id}, function(){
+                        $location.url('/');
+                    });
+                }
+            }])
+
+            // Routes declaration
+            .config(['$routeProvider', function ($routeProvider) {
+                $routeProvider
+                .when('/', {
+                    templateUrl: '/team.html',
+                    controller: 'TeamController'
+                })
+                .when('/:id', {
+                    templateUrl: '/teamDetails.html',
+                    controller: 'TeamDetailController'
+                });
+            }]);
+        </script>
+
+    </body>
+</html>
