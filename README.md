@@ -16,7 +16,10 @@ cd team-management-app
 
 2 solutions :
 
+
 EITHER you use docker or docker-compose :
+
+
 
 Make sure Docker is installed on your system :
 Exemple, on Ubuntu :
@@ -50,6 +53,8 @@ docker-compose up
 
 OR you have to install a complete mean stack environnement:
 
+
+
 I will enumerate all packages needed on Ubuntu :
 
 NodeJS and npm :
@@ -77,7 +82,9 @@ ExpressJS and AngularJS:
 Make sure you are still in your app directory (team-management-app).
 
 sudo npm install
+
 sudo npm install -g bower
+
 sudo bower install --allow-root
 
 
