@@ -5,7 +5,9 @@ This is a small application able to manage teams and their members.
 # Installation
 
 To install this app, clone the repository into your workdir :
+
 I assume git is installed on your computer :
+
 sudo apt-get install git
 
 git clone https://github.com/starcher26/team-management-app
@@ -46,7 +48,7 @@ Then we run the app using :
 docker-compose up
 
 
-OR you hate to install a complete mean stack environnement:
+OR you have to install a complete mean stack environnement:
 
 I will enumerate all packages needed on Ubuntu :
 
@@ -75,6 +77,7 @@ ExpressJS and AngularJS:
 Make sure you are still in your app directory (team-management-app).
 
 sudo npm install
+sudo npm install -g bower
 sudo bower install --allow-root
 
 
