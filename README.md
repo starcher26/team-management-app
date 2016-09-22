@@ -50,7 +50,7 @@ OR you hate to install a complete mean stack environnement:
 
 I will enumerate all packages needed on Ubuntu :
 
-NodeJS nad npm :
+NodeJS and npm :
 
 sudo apt-get install nodejs
 
